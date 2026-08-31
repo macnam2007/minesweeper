@@ -1,0 +1,72 @@
+classDiagram
+    class GameState {
+        <<enumeration>>
+        MainMenu
+        LevelSelect
+        Settings
+        Playing
+        GameOver
+        Win
+    }
+
+    class GameManager {
+        -sf::Font font
+        -float WScreen
+        -float HScreen
+        -GameState State
+        -sf::Clock gameClock
+        -int FlagsPlaced
+        -int MineCount
+        +run()
+        +UI_HUB(sf::RenderWindow, Button[], int)
+        +HandleInput(sf::RenderWindow)
+        +ChangeState(GameState)
+    }
+
+    class Button {
+        -ButtonState State
+        -sf::Color ListBgColor[3]
+        -float x, y, w, h
+        -sf::RectangleShape Box
+        -sf::Text TextShow
+        +Button(...)
+        +ShowButton(sf::RenderWindow)
+        +Update(sf::RenderWindow)
+        +isClicked(sf::RenderWindow) bool
+    }
+
+    class SquareBoard {
+        -int W_Board
+        -int H_Board
+        -int NumberBomb
+        -bool IsGameOver
+        -bool IsFirstClick
+        -vector~Cell~ Board
+        +SquareBoard(int, int, int)
+        +GenerateMines(int firstX, int firstY)
+        +GiveAdjacentMinesCount()
+        +RevealCell(int x, int y) bool
+        +RevealAdjacentCells(int x, int y)
+        +FlagCell(int x, int y)
+        +CheckWin() bool
+        +PrintBoard()
+    }
+
+    class Cell {
+        -bool IsMine
+        -bool IsRevealed
+        -bool IsFlagged
+        -int AdjacentMinesCount
+        +Cell()
+        +Reveal()
+        +ToggleFlag()
+        +CheckMine() bool
+        +PlaceMine()
+        +GetAdjacentMinesCount() int
+        +UpdateAdjacentMinesCount(int)
+    }
+
+    GameManager "1" --> "1" GameState : Quan ly
+    GameManager "1" --> "many" Button : Quan ly UI
+    GameManager "1" --> "1" SquareBoard : Quan ly Ban do
+    SquareBoard "1" --> "many" Cell : Cau tao tu cac O dat
