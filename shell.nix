@@ -1,12 +1,21 @@
 { pkgs ? import <nixpkgs> {} }:
+
 pkgs.mkShell {
-  # nativeBuildInputs chứa các công cụ hỗ trợ quá trình build
-  nativeBuildInputs = with pkgs; [
-    pkg-config
-  ];
-  
-  # buildInputs chứa các thư viện sẽ được liên kết (link) vào code
+  name = "minesweeper-sfml3-env";
+
+  # Khai báo các gói cần thiết
   buildInputs = with pkgs; [
-    sfml
+    gcc             # Trình biên dịch C++ (C++17/20)
+    gnumake         # Công cụ make (nếu bạn dùng Makefile)
+    pkg-config      # Giúp C++ tìm đường dẫn thư viện SFML
+    sfml            # Thư viện SFML (Trên nhánh unstable thường mặc định là bản mới nhất)
   ];
+
+  # Lệnh tự động chạy khi bạn gõ nix-shell
+  shellHook = ''
+    echo "============================================="
+    echo " Môi trường lập trình SFML đã sẵn sàng!      "
+    echo " Trình biên dịch: $(g++ --version | head -n 1)"
+    echo "============================================="
+  '';
 }

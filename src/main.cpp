@@ -1,5 +1,6 @@
 //nix-shell
-//g++ -I./headers src/main.cpp src/Cell.cpp src/SquareBoard.cpp -o minesweeper -lsfml-graphics -lsfml-window -lsfml-system
+//g++ -I./headers src/main.cpp src/Button.cpp src/Cell.cpp src/SquareBoard.cpp -o minesweeper -lsfml-graphics -lsfml-window -lsfml-system
+
 #include "SquareBoard.hpp"
 
 int main()
