@@ -17,7 +17,8 @@ Button::Button(
     this->textShow.setCharacterSize(size);
     sf::FloatRect bounds = this->textShow.getLocalBounds();
     this->textShow.setOrigin(
-        {   bounds.position.x + bounds.size.x/2.0f,
+        {   
+            bounds.position.x + bounds.size.x/2.0f,
             bounds.position.y  + bounds.size.y/2.0f
         }
     );
@@ -43,18 +44,21 @@ bool Button::Update(sf::RenderWindow& window)
 {
     sf::Vector2i mousePixelPos = sf::Mouse::getPosition(window);
     sf::Vector2f mouseWorldPos = window.mapPixelToCoords(mousePixelPos);
+
+    bool clicked = false;
     if (this->box.getGlobalBounds().contains(mouseWorldPos))
     {
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
         {
-            return true;
+            this->state = ButtonState::click;
+            clicked = true;
         }
         else this->state = ButtonState::hover;
     }
     else this->state = ButtonState::normal;
 
     this->box.setFillColor(GetColor());
-    return false;
+    return clicked;
 }
 
 bool Button::HoverButton(sf::RenderWindow& window) // khi nhả chuột , hàm này ktra có phải nhả chuột trong ô này hay không

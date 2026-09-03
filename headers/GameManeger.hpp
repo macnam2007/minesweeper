@@ -14,17 +14,16 @@ class GameManeger
         sf::Clock gameClock;
         int flagsPlaced;
         int minesCount;
+        SquareBoard Map;
 
     private:
         std::vector<Button> menuButtons;    //Start, Settings, Exit
         std::vector<Button> levelButtons;   //Easy, Medium, Hard, Back
         std::vector<Button> gameOverButtons;//Play Again, Main Menu
-        std::vector<Button> settingButtons; //Sound On/Off, Back
 
         std::vector<Text> menuTexts;
         std::vector<Text> levelTexts;
         std::vector<Text> gameOverTexts;
-        std::vector<Text> settingTexts;
 
     public:
         GameManeger();

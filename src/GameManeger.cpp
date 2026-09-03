@@ -1,6 +1,6 @@
 #include "GameManeger.hpp"
 
-GameManeger::GameManeger() : wScreen(1280), hScreen(720), state(GameState::MainMenu)
+GameManeger::GameManeger() : wScreen(1280), hScreen(720), state(GameState::MainMenu),  Map(font)
 {
     assert(this->font.openFromFile("assets/Roboto-Regular.ttf") && "Error: không tải được font chữ !!!\n");
 
@@ -23,15 +23,6 @@ GameManeger::GameManeger() : wScreen(1280), hScreen(720), state(GameState::MainM
     this->menuButtons.push_back(
         Button(
             this->wScreen/2.0f-200,this->hScreen/5.0f+200, 400, 50,
-            "SETTINGS", this->font, 30,
-            sf::Color(200,200,200),
-            sf::Color(180,180,180),
-            sf::Color(170,170,170)
-        )
-    );
-    this->menuButtons.push_back(
-        Button(
-            this->wScreen/2.0f-200,this->hScreen/5.0f+300, 400, 50,
             "EXIT", this->font, 30,
             sf::Color(200,200,200),
             sf::Color(180,180,180),
@@ -74,6 +65,16 @@ GameManeger::GameManeger() : wScreen(1280), hScreen(720), state(GameState::MainM
             sf::Color(170,170,170)
         )
     );
+    this->levelButtons.push_back(
+        Button(
+            this->wScreen/2.0f-550,this->hScreen/5.0f+500, 100, 50,
+            "<- Back", this->font, 30,
+            sf::Color(200,200,200),
+            sf::Color(180,180,180),
+            sf::Color(170,170,170)
+        )
+    );
+
 
 }
 
@@ -104,8 +105,12 @@ void GameManeger::HandleInput(sf::RenderWindow& window)
                 {
                     bool check = button.Update(window);
                     if (check)
+                    {
                         if (button.text == "START GAME")
                             this->state = GameState::LevelSelect;
+                        else if (button.text == "EXIT")
+                            window.close();
+                    }
                 }
                 break;
 
@@ -115,12 +120,22 @@ void GameManeger::HandleInput(sf::RenderWindow& window)
                     bool check = button.Update(window);
                     if (check)
                     {
-                        this->state = GameState::Playing;
-                        // tạo bảng game tại đây
+                        if (button.text == "<- Back")
+                            this->state = GameState::MainMenu;
+                        else
+                        {
+                            // tạo bảng game tại đây
+                            this->state = GameState::Playing;
+                            if (button.text == "Easy")
+                                this->Map.Create(9,9,9,this->wScreen,this->hScreen);
+                            else if (button.text == "Normal")
+                                this->Map.Create(16,16,40,this->wScreen,this->hScreen);
+                            else if (button.text == "Hard")
+                                this->Map.Create(32,16,99,this->wScreen,this->hScreen);
+                        }
                     }
                 }
                 break;
-            
 
         }
     }
@@ -144,6 +159,10 @@ void GameManeger::UI(sf::RenderWindow& window)
                 button.ShowButton(window);
             for (auto& text   : this->levelTexts)
                 text.ShowText(window);
+            break;
+
+        case GameState::Playing:
+            this->Map.ShowBoard(window);
             break;
     }
     window.display();

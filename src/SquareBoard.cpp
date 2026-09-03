@@ -1,8 +1,38 @@
 #include "SquareBoard.hpp"
 
-SquareBoard::SquareBoard(int width, int height, int number) : wBoard(width),hBoard(height), numberBomb(number), isGameOver(false), isFirstClick(true), numberRevealed(0)
+SquareBoard::SquareBoard(sf::Font& font) : number(font)
+{}
+
+void SquareBoard::Create(int width, int height, int number, float wScreen, float hScreen)
 {
+    this->wBoard = width;
+    this->hBoard = height;
+    this->numberBomb = number;
+    this->isGameOver = false;
+    this->isFirstClick = false;
+    this->numberRevealed = 0;
+
     this->Board.assign(width*height, Cell());
+    this->widthCell = (hScreen-120)/height;
+    this->xStartPaint = (wScreen-width*this->widthCell)/2;
+    this->yStartPaint = 60;
+
+    this->cellUp.setSize(sf::Vector2f(this->widthCell,this->widthCell));
+    this->cellUp.setFillColor(sf::Color::Blue);
+    this->cellUp.setOutlineColor(sf::Color::Black);
+    this->cellUp.setOutlineThickness(3.0f);
+
+    this->cellDown.setSize(sf::Vector2f(this->widthCell,this->widthCell));
+    this->cellDown.setFillColor(sf::Color(200,200,200));
+    this->cellDown.setOutlineColor(sf::Color(220,220,220));
+    this->cellDown.setOutlineThickness(3.0f);
+
+    this->flag.setRadius(this->widthCell/2.2f);
+    this->flag.setOrigin({this->widthCell/2.0f, this->widthCell/2.0f});
+    this->flag.setFillColor(sf::Color::Red);
+
+    this->number.setCharacterSize(10);
+    
 }
 
 Cell& SquareBoard::GetCell(int x, int y)
@@ -129,7 +159,7 @@ bool SquareBoard::CheckWin()
     return false;
 }
 
-void SquareBoard::PrintBoard()
+void SquareBoard::PrintBoard() // in ra màn hình terminal
 {
     for (int y = 0; y < this->hBoard; y++)
     {
@@ -141,10 +171,47 @@ void SquareBoard::PrintBoard()
                 std::cout<<" [~] ";
                 continue;
             }
-            if (currentCell.GetAdjacentMinesCount() == 0)
+            else if (currentCell.GetAdjacentMinesCount() == 0)
                 std::cout<<" [ ] ";
             else std::cout<<" ["<<currentCell.GetAdjacentMinesCount()<<"] ";
         }
         std::cout<<std::endl;
+    }
+}
+
+void SquareBoard::ShowBoard(sf::RenderWindow& window)
+{
+    for (int y=0; y< this->hBoard; y++)
+    {
+        for (int x=0 ; x< this->wBoard; x++)
+        {
+            this->cellDown.setPosition({this->xStartPaint + x*this->widthCell, this->yStartPaint + y*this->widthCell});
+            window.draw(this->cellDown);
+
+            Cell& currentCell = GetCell(x,y);
+            if (!currentCell.isRevealed)
+            {
+                this->cellUp.setPosition({this->xStartPaint + x*this->widthCell, this->yStartPaint + y*this->widthCell});
+                window.draw(this->cellUp);
+                if (currentCell.isFlagged)
+                {
+                    this->flag.setPosition({this->xStartPaint + x*this->widthCell, this->yStartPaint + y*this->widthCell});
+                    window.draw(this->flag);
+                }
+            }
+            else if (currentCell.GetAdjacentMinesCount() > 0)
+            {
+                this->number.setString(std::to_string(currentCell.GetAdjacentMinesCount()));
+                sf::FloatRect bounds = this->number.getLocalBounds();
+                this->number.setOrigin(
+                    {
+                        bounds.position.x + bounds.size.x/2.0f,
+                        bounds.position.y + bounds.size.y/2.0f
+                    }
+                );
+                this->number.setPosition({this->xStartPaint + x*this->widthCell, this->yStartPaint + y*this->widthCell});
+                window.draw(this->number);
+            }
+        }
     }
 }
