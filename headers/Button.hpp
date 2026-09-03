@@ -1,6 +1,8 @@
+#pragma once
 #include <SFML/Graphics.hpp>
+#include "GameState.hpp"
 #include <string>
-#include <cassert> // in ra lỗi
+
 
 class Button
 {
@@ -17,6 +19,9 @@ class Button
         sf::Text textShow;
 
     public:
+        const std::string text;
+
+    public:
         Button(
             float x, float y , float w, float h,
             const std::string& text,
@@ -26,8 +31,8 @@ class Button
             const sf::Color& hoverColor,
             const sf::Color& clickColor
         );
-        void ShowButton(sf::RenderWindow&);
+        void ShowButton(sf::RenderWindow& window);
         sf::Color GetColor();
-        void Update(sf::RenderWindow&);
+        bool Update(sf::RenderWindow& window);
         bool HoverButton(sf::RenderWindow& window);
 };

@@ -1,3 +1,5 @@
+#pragma once
+
 class Cell
 {
     friend class SquareBoard;

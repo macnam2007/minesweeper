@@ -1,8 +1,13 @@
 #include "Button.hpp"
 
 Button::Button(
-    float x, float y, float w, float h,const std::string& text, sf::Font& font, int size,const sf::Color& normalColor,const sf::Color& hoverColor,const sf::Color& clickColor
-) : x(x), y(y), w(w), h(h), textShow(font), state(ButtonState::normal)
+    float x, float y, float w,float h,
+    const std::string& text, sf::Font& font,
+    int size,
+    const sf::Color& normalColor,
+    const sf::Color& hoverColor,
+    const sf::Color& clickColor
+) : x(x), y(y), w(w), h(h),text(text), textShow(font), state(ButtonState::normal)
 {
     listBgColor[0] = normalColor;
     listBgColor[1] = hoverColor;
@@ -12,9 +17,9 @@ Button::Button(
     this->textShow.setCharacterSize(size);
     sf::FloatRect bounds = this->textShow.getLocalBounds();
     this->textShow.setOrigin(
-    {   bounds.position.x + bounds.size.x/2.0f,
-        bounds.position.y  + bounds.size.y/2.0f
-    }
+        {   bounds.position.x + bounds.size.x/2.0f,
+            bounds.position.y  + bounds.size.y/2.0f
+        }
     );
     this->textShow.setPosition({x+w/2, y+h/2});
 
@@ -34,7 +39,7 @@ sf::Color Button::GetColor()
     return listBgColor[this->state];
 }
 
-void Button::Update(sf::RenderWindow& window)
+bool Button::Update(sf::RenderWindow& window)
 {
     sf::Vector2i mousePixelPos = sf::Mouse::getPosition(window);
     sf::Vector2f mouseWorldPos = window.mapPixelToCoords(mousePixelPos);
@@ -42,14 +47,14 @@ void Button::Update(sf::RenderWindow& window)
     {
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
         {
-            this->state = ButtonState::click;
-            // lệnh tương tác của nút
+            return true;
         }
         else this->state = ButtonState::hover;
     }
     else this->state = ButtonState::normal;
 
     this->box.setFillColor(GetColor());
+    return false;
 }
 
 bool Button::HoverButton(sf::RenderWindow& window) // khi nhả chuột , hàm này ktra có phải nhả chuột trong ô này hay không
