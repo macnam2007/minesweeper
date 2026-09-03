@@ -17,13 +17,16 @@ class GameManeger
         SquareBoard Map;
 
     private:
+        sf::RectangleShape bgEnd;
+
         std::vector<Button> menuButtons;    //Start, Settings, Exit
         std::vector<Button> levelButtons;   //Easy, Medium, Hard, Back
-        std::vector<Button> gameOverButtons;//Play Again, Main Menu
+        std::vector<Button> endButtons;//Play Again, Main Menu
 
         std::vector<Text> menuTexts;
         std::vector<Text> levelTexts;
         std::vector<Text> gameOverTexts;
+        std::vector<Text> winTexts;
 
     public:
         GameManeger();

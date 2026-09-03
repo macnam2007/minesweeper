@@ -9,7 +9,7 @@ void SquareBoard::Create(int width, int height, int number, float wScreen, float
     this->hBoard = height;
     this->numberBomb = number;
     this->isGameOver = false;
-    this->isFirstClick = false;
+    this->isFirstClick = true;
     this->numberRevealed = 0;
 
     this->Board.assign(width*height, Cell());
@@ -27,11 +27,10 @@ void SquareBoard::Create(int width, int height, int number, float wScreen, float
     this->cellDown.setOutlineColor(sf::Color(220,220,220));
     this->cellDown.setOutlineThickness(3.0f);
 
-    this->flag.setRadius(this->widthCell/2.2f);
-    this->flag.setOrigin({this->widthCell/2.0f, this->widthCell/2.0f});
+    this->flag.setRadius(this->widthCell/2);
     this->flag.setFillColor(sf::Color::Red);
 
-    this->number.setCharacterSize(10);
+    this->number.setCharacterSize(40);
     
 }
 
@@ -209,9 +208,44 @@ void SquareBoard::ShowBoard(sf::RenderWindow& window)
                         bounds.position.y + bounds.size.y/2.0f
                     }
                 );
-                this->number.setPosition({this->xStartPaint + x*this->widthCell, this->yStartPaint + y*this->widthCell});
+                this->number.setPosition({float(this->xStartPaint + (x+0.5f)*this->widthCell) , float(this->yStartPaint + (y+0.5f)*this->widthCell)});
                 window.draw(this->number);
             }
+        }
+    }
+}
+
+void SquareBoard::InteractCell(sf::RenderWindow& window, GameState& state)
+{
+    if (CheckWin())
+        state = GameState::Win;
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+    {
+        sf::Vector2i mousePixelPos = sf::Mouse::getPosition(window);
+        sf::Vector2f mouseWorldPos = window.mapPixelToCoords(mousePixelPos);
+        int xMouse = (mouseWorldPos.x-this->xStartPaint)/this->widthCell;
+        int yMouse = (mouseWorldPos.y-this->yStartPaint)/this->widthCell;
+        
+        if (xMouse<0 || xMouse>=this->wBoard || yMouse<0 || yMouse>=this->hBoard) return;
+        Cell& currentCell =GetCell(xMouse,yMouse);
+        if (!currentCell.isRevealed && !currentCell.isFlagged)
+        {
+            bool checkLose = !RevealCell(xMouse,yMouse);
+            if (checkLose) state = GameState::GameOver;
+        }
+    }
+    else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+    {
+        sf::Vector2i mousePixelPos = sf::Mouse::getPosition(window);
+        sf::Vector2f mouseWorldPos = window.mapPixelToCoords(mousePixelPos);
+        int xMouse = (mouseWorldPos.x-this->xStartPaint)/this->widthCell;
+        int yMouse = (mouseWorldPos.y-this->yStartPaint)/this->widthCell;
+
+        if (xMouse<0 || xMouse>=this->wBoard || yMouse<0 || yMouse>=this->hBoard) return;
+        Cell& currentCell =GetCell(xMouse,yMouse);
+        if (!currentCell.isRevealed)
+        {
+            currentCell.ToggleFlag();
         }
     }
 }

@@ -3,6 +3,7 @@
 #include <queue>
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include "GameState.hpp"
 #include "Cell.hpp"
 
 class SquareBoard
@@ -16,6 +17,7 @@ class SquareBoard
         sf::Text number;
         sf::RectangleShape cellUp;
         sf::RectangleShape cellDown;
+        sf::RectangleShape bgEnd;
         sf::CircleShape flag;
         int numberBomb;
         int numberRevealed;
@@ -34,4 +36,5 @@ class SquareBoard
         bool CheckWin();
         void PrintBoard();
         void ShowBoard(sf::RenderWindow& window);
+        void InteractCell(sf::RenderWindow& window, GameState& state);
 };
