@@ -1,7 +1,8 @@
 #include "SquareBoard.hpp"
 
-SquareBoard::SquareBoard(sf::Font& font) : number(font)
-{}
+SquareBoard::SquareBoard(sf::Font& font) : number(font), textElapsed(font), textCurrentBomb(font)
+{
+}
 
 void SquareBoard::Create(int width, int height, int number, float wScreen, float hScreen)
 {
@@ -11,27 +12,38 @@ void SquareBoard::Create(int width, int height, int number, float wScreen, float
     this->isGameOver = false;
     this->isFirstClick = true;
     this->numberRevealed = 0;
-
+    this->flagsPlaced = 0;
+    
     this->Board.assign(width*height, Cell());
     this->widthCell = (hScreen-120)/height;
     this->xStartPaint = (wScreen-width*this->widthCell)/2;
     this->yStartPaint = 60;
-
+    
     this->cellUp.setSize(sf::Vector2f(this->widthCell,this->widthCell));
     this->cellUp.setFillColor(sf::Color::Blue);
     this->cellUp.setOutlineColor(sf::Color::Black);
     this->cellUp.setOutlineThickness(3.0f);
-
+    
     this->cellDown.setSize(sf::Vector2f(this->widthCell,this->widthCell));
     this->cellDown.setFillColor(sf::Color(200,200,200));
     this->cellDown.setOutlineColor(sf::Color(220,220,220));
     this->cellDown.setOutlineThickness(3.0f);
-
+    
     this->flag.setRadius(this->widthCell/2);
     this->flag.setFillColor(sf::Color::Red);
-
+    
     this->number.setCharacterSize(40);
     
+    this->textCurrentBomb.setCharacterSize(30);
+    this->textCurrentBomb.setFillColor(sf::Color::Red);
+    this->textCurrentBomb.setPosition({wScreen/2-300,30});
+    UpdateCurrentBomb();
+    
+    this->textElapsed.setCharacterSize(30);
+    this->textElapsed.setFillColor(sf::Color::Red);
+    this->textElapsed.setPosition({wScreen/2+300,30});
+    this->gameClock.restart();
+    UpdateTimeElapsed();
 }
 
 Cell& SquareBoard::GetCell(int x, int y)
@@ -148,7 +160,12 @@ void SquareBoard::RevealAdjacentCells(int x, int y)
 
 void SquareBoard::FlagCell(int x, int y)
 {
-    GetCell(x,y).ToggleFlag();
+    Cell& currentCell = GetCell(x,y);
+    currentCell.ToggleFlag();
+    if (currentCell.isFlagged)
+        this->flagsPlaced++;
+    else this->flagsPlaced--;
+    UpdateCurrentBomb();
 }
 
 bool SquareBoard::CheckWin()
@@ -180,6 +197,9 @@ void SquareBoard::PrintBoard() // in ra màn hình terminal
 
 void SquareBoard::ShowBoard(sf::RenderWindow& window)
 {
+    window.draw(this->textElapsed);
+    window.draw(this->textCurrentBomb);
+
     for (int y=0; y< this->hBoard; y++)
     {
         for (int x=0 ; x< this->wBoard; x++)
@@ -217,6 +237,7 @@ void SquareBoard::ShowBoard(sf::RenderWindow& window)
 
 void SquareBoard::InteractCell(sf::RenderWindow& window, GameState& state)
 {
+    if (state == GameState::Playing) UpdateTimeElapsed();
     if (CheckWin())
         state = GameState::Win;
     if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
@@ -245,7 +266,36 @@ void SquareBoard::InteractCell(sf::RenderWindow& window, GameState& state)
         Cell& currentCell =GetCell(xMouse,yMouse);
         if (!currentCell.isRevealed)
         {
-            currentCell.ToggleFlag();
+            FlagCell(xMouse,yMouse);
         }
     }
+}
+
+void SquareBoard::UpdateTimeElapsed()
+{
+    this->textElapsed.setString(GetTextTimeElapsed());
+    sf::FloatRect bounds = this->textElapsed.getLocalBounds();
+    this->textElapsed.setOrigin(
+        {
+            bounds.position.x + bounds.size.x/2.0f,
+            bounds.position.y + bounds.size.y/2.0f
+        }
+    );
+}
+
+std::string SquareBoard::GetTextTimeElapsed()
+{
+    return std::to_string(static_cast<int>(this->gameClock.getElapsedTime().asSeconds()));
+}
+
+void SquareBoard::UpdateCurrentBomb()
+{
+    this->textCurrentBomb.setString(std::to_string(this->numberBomb-this->flagsPlaced));
+    sf::FloatRect bounds = this->textCurrentBomb.getLocalBounds();
+    this->textCurrentBomb.setOrigin(
+        {
+            bounds.position.x + bounds.size.x/2.0f,
+            bounds.position.y + bounds.size.y/2.0f
+        }
+    );
 }

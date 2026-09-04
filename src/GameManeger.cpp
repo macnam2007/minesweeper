@@ -1,11 +1,15 @@
 #include "GameManeger.hpp"
 
-GameManeger::GameManeger() : wScreen(1280), hScreen(720), state(GameState::MainMenu),  Map(font)
+GameManeger::GameManeger() : wScreen(1280), hScreen(720), state(GameState::MainMenu),  Map(font), textTime(font)
 {
     assert(this->font.openFromFile("assets/Roboto-Regular.ttf") && "Error: không tải được font chữ !!!\n");
     this->bgEnd.setSize(sf::Vector2f({float(this->wScreen),float(this->hScreen)}));
     this->bgEnd.setFillColor(sf::Color(0,0,0,200));
     this->bgEnd.setPosition({0,0});
+
+    this->textTime.setCharacterSize(30);
+    this->textTime.setFillColor(sf::Color::Red);
+    this->textTime.setPosition({this->wScreen/2.0f, this->hScreen/2.0f});
 
 
 
@@ -181,6 +185,17 @@ void GameManeger::HandleInput(sf::RenderWindow& window)
         else if (this->state == GameState::Playing)
         {
             this->Map.InteractCell(window,this->state);
+            if (this->state == GameState::Win)
+            {
+                this->textTime.setString(Map.GetTextTimeElapsed());
+                sf::FloatRect bounds = this->textTime.getLocalBounds();
+                this->textTime.setOrigin(
+                    {
+                        bounds.position.x + bounds.size.x/2.0f,
+                        bounds.position.y + bounds.size.y/2.0f
+                    }
+                );
+            }
         }
         else if (this->state == GameState::GameOver || this->state == GameState::Win)
         {
@@ -233,10 +248,12 @@ void GameManeger::UI(sf::RenderWindow& window)
         else if (this->state == GameState::Win)
         {
             window.draw(this->bgEnd);
+            window.draw(this->textTime);
             for (auto& text : this->winTexts)
                 text.ShowText(window);
             for (auto& button : this->endButtons)
                 button.ShowButton(window);
+            
         }
     }
     window.display();

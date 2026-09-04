@@ -3,6 +3,7 @@
 #include "Button.hpp"
 #include "SquareBoard.hpp"
 #include "Text.hpp"
+#include <string>
 #include <cassert> // in ra lỗi
 
 class GameManeger
@@ -11,17 +12,19 @@ class GameManeger
         sf::Font font;
         unsigned int wScreen , hScreen;
         GameState state;
-        sf::Clock gameClock;
+        
         int flagsPlaced;
         int minesCount;
         SquareBoard Map;
 
     private:
+        sf::Text textTime;
+
         sf::RectangleShape bgEnd;
 
         std::vector<Button> menuButtons;    //Start, Settings, Exit
         std::vector<Button> levelButtons;   //Easy, Medium, Hard, Back
-        std::vector<Button> endButtons;//Play Again, Main Menu
+        std::vector<Button> endButtons;     //Play Again, Main Menu
 
         std::vector<Text> menuTexts;
         std::vector<Text> levelTexts;

@@ -15,11 +15,15 @@ class SquareBoard
         float xStartPaint;
         float yStartPaint;
         sf::Text number;
+        sf::Clock gameClock;
+        sf::Text textElapsed;
+        sf::Text textCurrentBomb;
         sf::RectangleShape cellUp;
         sf::RectangleShape cellDown;
         sf::RectangleShape bgEnd;
         sf::CircleShape flag;
         int numberBomb;
+        int flagsPlaced;
         int numberRevealed;
         bool isGameOver;
         bool isFirstClick;
@@ -37,4 +41,8 @@ class SquareBoard
         void PrintBoard();
         void ShowBoard(sf::RenderWindow& window);
         void InteractCell(sf::RenderWindow& window, GameState& state);
+        void UpdateTimeElapsed();
+        std::string GetTextTimeElapsed();
+        void UpdateCurrentBomb();
+
 };
